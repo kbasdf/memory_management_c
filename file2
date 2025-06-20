@@ -1,0 +1,506 @@
+#include <stdio.h>
+#include<string.h>
+
+int count[10]={0,0,0,0,0,0,0,0,0,0};
+int utilization[10]={123,123,123,123,123,123,123,123,123,123};
+char memory[1];
+char to_optimize_list[10][20]={"null","null","null","null","null","null","null","null","null","null"};
+int inter_function_travel =0; //flag
+/* the type of to_optimize_list
+remains char,
+but, it can be displayed via %d after performing tooptimize_l()  function */
+
+// interpretation of data in below variable = 123 is null character.
+// shoud be replaced back by 123 when not in use.
+
+int to_optimize_list_int[10] ={123,123,123,123,123,123,123,123,123,123};
+
+int opl[] = {0,0,0,0,0,0,0,0,0,0};
+int oph[] = {0,0,0,0,0,0,0,0,0,0};
+int cluster_coordinates[10][2] = {{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}};
+extern int addition_pointer=1; //point to start of raw memory
+
+
+
+int memset1(int z,int number){
+    printf(" initializing the memory");
+    int i=addition_pointer;
+    /*initializaing memory unit,
+    placing nulls characters in memory units
+    */
+    memory[32]='\0';
+    while (1){
+         if (i == (addition_pointer - number)){
+                break;
+         }
+         int uu=i-1;
+         memory[uu] ='\0';
+         printf("\n this is value of memory unit # %d --->>> >> %c %d %s",i-1,memory[i-1],memory[i-1],memory[i-1]);
+         i--;
+    }
+    return 0;
+}
+void memorymap(){
+    printf("inside memory map");
+    int i=0;
+    int counter=0;
+    int flag=1;
+    printf("\n");
+    while (i< addition_pointer){
+            if(i== addition_pointer-1){
+                break;
+            }
+
+            if ((i)%8==0){
+                counter++;
+                flag=1;
+                printf("\n");
+            }
+        if (flag==1){
+            printf("memory ::  %2d  :: ",counter);
+            }
+        flag=0;
+        printf("  %3d  ", memory[i]);
+        i++;
+    }
+}
+int memdeclaration(int n){
+    char x[2];
+    x[0] = 'a';
+    x[1] = 'b';
+    int y=0;
+    while (count[y] !=0){
+        y++;
+    }
+    count[y] = n;
+    addition_pointer = addition_pointer + count[y];
+    memory[addition_pointer] = 'a';
+    memory[addition_pointer +1] = 'b';
+    return y;
+
+}
+
+void memoryanalysis(){
+    int i=9;
+    int y=addition_pointer;
+        i=9;
+    while (1){
+        while(i>=0){
+            printf("\n \n entered loop..this is value of i now %d", i);
+                if(count[i]==0){
+                        if (i==0){
+                             printf("\n No memory units found");
+                            break;
+                        }
+                        else{
+                            printf("\n analyzing memory unit number %d",i);
+                        }
+                        i--;
+                        continue;
+                }
+            printf("\n analyzing memory unit number %d", i);
+            int dumbvalue=count[i];
+            int countnulls=0;
+            while(dumbvalue>0){
+                if (memory[y-1]=='\0'){
+                    countnulls++;
+                }
+                dumbvalue--;
+            }
+            y=addition_pointer-count[i];
+            utilization[i]=(100-(countnulls/count[i])*100);
+            printf("\n **COUNTNULLS VALUE FOR MEM UNIT %d is %d  .. utilization is %d",i,countnulls, utilization[i]);
+            i--;
+    }
+    break;
+    }
+    printf("\n \n analysis completed");
+
+}
+/*
+function to optimize memory units with specific utilization number
+passed an int as parameter to function
+returns list of memory units to be optimized*/
+
+int tooptimize_l(int n){
+    int i=0;
+    int count1=0;
+    while(1){
+        if (utilization[i] <=n){
+            to_optimize_list_int[count1]=i;
+            count1++;
+        }
+        if(i==9){
+            break;
+        }
+        i++;
+    }
+
+    return (to_optimize_list_int);
+}
+/*on returning end, shunt off 123 from list*/
+
+int checkeligibility(int x,int y, int z){
+    int mid_point_of_mem = count[z]/2;
+    int mid_value_of_cluster= (x-y)/2;
+    int mid_point_of_cluster = x-mid_value_of_cluster;
+    printf("\n these are values passed %d %d %d %d %d", x,y,z, mid_point_of_mem,mid_point_of_cluster);
+    if(mid_point_of_cluster >= mid_point_of_mem){
+        printf("\n found eligibility");
+        return 0;}
+    else{
+        printf("\n found non eligibility");
+        return 1;
+    }
+}
+
+int find_biggest_cluster(int n){
+    /*should fulfill the criteria that cluster
+    is on right side of direction of entry of data
+    into the memory units
+    ..
+    also, the cluster should atleast form 80%
+    of entier countnulls
+    */
+
+    /*find last filled count index */
+    int i=9;
+    int y=addition_pointer;
+    while (1){
+        if (count[i] == 0){
+                i--;}
+        else if (i==0 && count[i]==0){
+            goto bosch; //take a note
+            }
+
+        else{
+            break;
+        }
+    }
+    /*fin the summation to subtract from addition_pointer pointer
+    in ordcer to find the place of first and last occurance unit
+    of n memory unit in memory map */
+    int summation=0;
+    while (i > n){
+        summation = summation + count[i];
+            i--;
+    }    /*
+    */
+    y=y-summation;
+    int pointer;
+    pointer = y-1; //points to place of last data unit of the memory unit
+
+    //find first occurance of \0 in the memory unit from behind.
+    int place_of_first_occurance;
+    place_of_first_occurance=y-count[n]; //points to place of first data unit of the memory unit
+    int size_of_cluster;
+    size_of_cluster =  (((100-utilization[n])/100)*count[n]);
+    size_of_cluster = (size_of_cluster*80)/100;
+    while(1){
+        if(pointer == place_of_first_occurance){
+            break;
+        }
+        int summation1=0;
+        if((memory[pointer] == '\0') && (pointer == place_of_first_occurance)){
+            printf("\n No cluster found !!");
+            goto bosch;
+        }
+        else if((memory[pointer] == '\0') && (pointer > place_of_first_occurance)){
+                summation1++;  //basically a count
+                int start=pointer;
+                printf("\n this is value of start %d and pointer %d", start,pointer);
+                int eligible=1;
+                while(1){
+                        printf("\n in loop --> this is value of pointer--> %d", pointer);
+                    if(summation1==size_of_cluster){
+                        printf("\n this is value of n %d",n);
+                        printf("\n \n ** Yaay !! cluster found with end coordinates:: %d  %d",start,pointer);
+                        eligible=checkeligibility(start,pointer,n);
+                        //checkeligibility() should set set flag
+                       // the flag to 0 after success
+
+                       if (eligible ==1){
+                            goto bosch;
+                        }
+                        cluster_coordinates[n][0] = start;
+                        cluster_coordinates[n][1] = pointer;
+                        printf("\n cluster_coordinates updated %d %d", cluster_coordinates[n][0],cluster_coordinates[n][1]);
+                        goto end;
+                    }
+                    else if(memory[pointer] == '\0' && pointer > place_of_first_occurance){
+                            summation1++;
+                            pointer--;
+                    }
+                    else {
+                        break;}
+                    }
+                }
+        else{
+            pointer--;
+        }
+
+    }
+    end:
+        return 0;
+    bosch:
+        return 1;
+}
+
+// expanding the left end coordinates of the cluster
+
+int expand_coordinates(int nx,int n){
+    //finding left-end coordinates of cluster
+    //and expanding it
+    int i = cluster_coordinates[n][1]-1;
+    int left_end= nx-count[n]+1;
+    int count=0;
+    while(i>=left_end){
+        if (memory[i] == '\0'){
+                i--;
+                count++;
+        }
+        else{
+            break;
+        }
+    }
+    cluster_coordinates[n][1]=cluster_coordinates[n][1]-count;
+}
+
+int move_left(int pointer,int left_end, int *abc){
+    *abc=0;
+    *(abc+1)=0;
+    *(abc+2)=0;
+    *(abc+3)=0;
+    *(abc+4)=0;
+    *(abc+5)=0;
+    *(abc+6)=0;
+    *(abc+7)=0;
+    *(abc+8)=0;
+    *(abc+9)=0;
+    *(abc+10)=0;
+    *(abc+11)=0;
+    int count_left_10=0;
+    int count_left_10_coor[5]={0,0,0,0,0};
+    while((pointer -4)>=left_end){
+        if (memory[pointer]=='\0' && memory[pointer-1]=='\0' && memory[pointer-2]=='\0'&& memory[pointer-3]=='\0'&& memory[pointer-4] =='\0'){
+            *(abc+ 1+ *abc)=pointer;
+            *abc++;
+            pointer=pointer-5;
+        }
+        else{
+            pointer=pointer-5;
+        }
+
+    }
+    int i=0;
+    while(*(abc+1+i) != 0 )&& (*(abc+2+i) != 0) && ((i+1)<=4)){
+        if ((*(abc+1+i)- *(abc+2+i)) ==5){
+            *(abc+ 7+ *(abc+6)) = *(abc+1+i);
+            *(abc+6)++;
+        }
+        i++;
+    }
+    return 0;
+}
+
+
+int move_right(int pointer,int right_end, int *abc){
+    *abc=0;
+    *(abc+1)=0;
+    *(abc+2)=0;
+    *(abc+3)=0;
+    *(abc+4)=0;
+    *(abc+5)=0;
+    *(abc+6)=0;
+    *(abc+7)=0;
+    *(abc+8)=0;
+    *(abc+9)=0;
+    *(abc+10)=0;
+    *(abc+11)=0;
+    while((pointer +4)<=right_end){
+        if (memory[pointer]=='\0' && memory[pointer+1]=='\0' && memory[pointer+2]=='\0'&& memory[pointer+3]=='\0'&& memory[pointer+4] =='\0'){
+            *(abc +1 + *abc) = pointer +4; //count_right_5_coor[count_right_5] =pointer +4; // moving pointer to right side, +4
+            *(abc)++; //count_right_5++;
+            pointer=pointer + 5;
+        }
+        else{
+            pointer=pointer+5;
+        }
+    }
+    int i=0;
+    while(*(abc +1 +i) != 0 && *(abc +2 +i)!=0 && i+1 <=4){
+            if ((*(abc+2+i) - *(abc+1+i))==5 ){// count_right_5_coor[i+1] - count_right_5_coor[i]) == 5){
+                *((abc+7+ *(abc+6)) = *(abc+2+i);//count_right_10_coor[count_right_10] = count_right_5_coor[i+1];
+                *(abc+6)++;
+        }
+        i++;
+    }
+    return 0;
+}
+
+
+// FSNBIMU stands for find small null blocks in  in memory units // find space blocks of 1
+int fsnbimu(int n){
+    while (1){
+        int nx = addition_pointer;
+        int i=9;
+        int summation=0;
+        while(1){
+                if(count[i] == 0){
+                    i--;
+                }
+                else{
+                    break;
+                }
+        }
+        while(i>n){
+                summation=summation+count[i];
+        }
+        nx = nx - summation -1;
+        int boundary_r = nx;
+        int boundary_l = nx - count[n]+1;
+
+        // Now, nx is pointing to last bit of the memory unit //Reverse diredtion
+
+        //from here we will start reading in reverse direction
+
+        // all memory unit pointers are counted starting reverse direction from
+        // 100 to 0
+        i=10;  // this is mode.. Mode : 10  Mode 5
+
+        expand_coordinates(nx,n);
+        int pointer=cluster_coordinates[n][1];
+        int left_end = nx -count[n]+1;
+        int right_end = nx;
+        int result_l[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+        int result_r[12]={0,0,0,0,0,0,0,0,0,0,0,0};
+        int *ptr1, *ptr2;
+        ptr1=&result_l;
+        ptr2=&result_r;
+        while(cluster_coordinates[n][1] >=left_end || cluster_coordinates[n][0]<= right_end){
+                result_l=move_left(cluster_coordinates[n][1],left_end,ptr1);
+                result_r=move_right{cluster_coordinates[n][0],right_end,ptr2};
+                break;
+        }
+        int *ultimate_pointer[2]= {result_l,result_r};
+        return (&ultimate_pointer);
+        // format of result_l or result_r = {variable,pointer,variable,pointer}
+    }
+
+    /*
+    int  1 byte
+    character 1byte
+    -43489384577
+    space characters
+    */
+
+}
+
+int compress(int n, int *result){
+return 0;
+
+}
+int optimize_l(int n,int code){
+
+    // cod 0 stands for a list
+    // code 1 stands for single entry
+    printf("\n\n\n\n\n***ENTERED OPTIMIZE L\n\n\n\n\n\n");
+    printf("\n these are values of n and code %d %d", n,code);
+    if (code ==0){
+        int *x = n;
+        int count=0;
+        while(*x != 123 && count <10 ){
+                printf("\n inside loop.. this is value of pointer %d %d count ",*x,x,count);
+                int y;
+                int *result1;
+                y=find_biggest_cluster(*x);
+                result1=fsnbimu(2);
+                compress(n,result1);
+
+                count++;
+                x++;
+        }
+        printf("\n\n ** Optimized list of memory units with count %d ** ", count);
+        return 0;
+    }
+    else{
+        int y;
+        int *result2;
+        y =find_biggest_cluster(n);
+        result2=fsnbimu(n);
+        compress(n,result2);
+        /*  WIP need to extract the results from
+         the resule here
+         after receiving the coordinates, we need to
+         send the coordinates to a function,
+         so it can delete nulls one by one
+         */
+
+         return 0;
+    }
+}
+int main(){
+    memset(count,0,sizeof(count));
+    memory[0] = '@';
+    printf("\n___________\n___________\n");
+    /*
+    declaration part
+    */
+    int y=0;
+    while (1){
+            if (y==5){
+                break;
+            }
+        int i;
+        i = memdeclaration(100);
+        /*
+        memory implementation here
+        allocating a big memory play area of size 100 bytes
+        function to  initialize memory play ground;
+        */
+        int result = 1;
+        result  = memset1(i,100);
+        printf("\nthis is result %d", result);
+        y++;
+    }
+    printf("\n \n\n\nprinting count now.....\n\n\n\n");
+    memorymap();
+    memoryanalysis();
+
+    /*lets find memory units with 20% and
+    lesser utilization
+    for this we need to initialize a list of 10 charactsrs*/
+    int *listyy;
+
+    listyy = tooptimize_l(20);
+    /*
+    Now.. listyy needs to be interpreted.. 0 value acts as null value... and 0
+    */
+
+    // to optimize memory units with low utilization, 20% and lower
+    //tooptimize_h(80);  // to optiize memory units with high utilization, 80% and higher
+    int result1;
+    printf("\n this is address of to_optimize_list_int %d \n", to_optimize_list_int);
+    result1=optimize_l(2,1);
+
+    //code above represents == 0= list ; 1=single int (index memory unit)
+
+    //feed it the memory unit // pass memory unit number as parameter
+    //optimize_h();
+    /*
+
+    */
+
+    /*
+    Operation on to_optimize_list_int
+    */
+        return 0;
+}
+
+// limitations
+// the size of memory unit has to be small.. also, while
+//optimizing the memory unit on right and left side, the
+//system will not be able to handle capture more than 5 blocks
+//of 5x 5-unit nulls and 5x 10-unit nulls
+
+//this can be corrected in move_left and move_right section;
