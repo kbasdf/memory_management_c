@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(){
 
@@ -33,15 +34,16 @@ int main(){
             printf("\033[A");
             new_line--;
             printf("\r");
-        printf(" <3");
+         printf("\033[1;31m <3\033[0m");
+        //printf(" <3");
         printf("\n");
         new_line++;
         printf("\n");
         new_line++;
         zool=0;
 
-    }
 
+    }
     printf(" 0");
     printf("\n");
     new_line++;
