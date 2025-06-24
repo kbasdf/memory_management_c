@@ -6,6 +6,7 @@ int main(){
     printf("\n\n\n\n\n\n\n\n\n\n");
     int count1=1;
     int zool=0;
+    int distance=20;
 
 
     here:;
@@ -17,7 +18,7 @@ int main(){
     new_line++;
     printf("\n");  // <----- pointer is here
     new_line++;
-    int count=400000000;
+    int count=200000000;
 
     if((count1%3)==0){
         printf("\033[A");
@@ -45,22 +46,74 @@ int main(){
 
     }
     printf(" 0");
+    int y=0;
+    //distance
+    while (y !=distance){
+        printf(" ");
+        y++;
+    }
+    y=0;
+    //other figure
+    printf(" 0");
+
     printf("\n");
     new_line++;
     if (count1%2==0){
         printf("/|\\_");
+
+        //distance
+        while (y !=distance-2){
+            printf(" ");
+            y++;
+        }
+        y=0;
+        //other figure
+        printf("/|\\ ");
+
+
         printf("\n");
         new_line++;
     }
     else{
         printf("/|\\ ");
+
+
+        //distance
+        while (y !=distance-2){
+            printf(" ");
+            y++;
+        }
+        y=0;
+        //other figure
+        printf("/|\\ ");
+
+
         printf("\n");
         new_line++;
     }
     printf(" |");
+
+    //distance
+        while (y !=distance){
+            printf(" ");
+            y++;
+        }
+        y=0;
+        //other figure
+        printf(" |");
+
+
     printf("\n");
     new_line++;
     printf("/ \\");
+
+    while (y !=distance-1){
+            printf(" ");
+            y++;
+        }
+        y=0;
+        //other figure
+        printf("/ \\");
 
     // moving the cursor back to original position
     // -----
